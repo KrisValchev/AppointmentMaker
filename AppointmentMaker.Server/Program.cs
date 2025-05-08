@@ -1,4 +1,6 @@
 
+using AppointmentMaker.Server.Extensions;
+
 namespace AppointmentMaker.Server
 {
     public class Program
@@ -7,14 +9,15 @@ namespace AppointmentMaker.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
+			// Add services to the container.
+			builder.Services.AddApplicationDbContext(builder.Configuration);
+			builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+
+			var app = builder.Build();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
