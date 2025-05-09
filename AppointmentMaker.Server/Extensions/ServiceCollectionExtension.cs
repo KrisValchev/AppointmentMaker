@@ -1,10 +1,17 @@
-﻿using AppointmentMaker.Infrastructure.Data;
+﻿using AppointmentMaker.Core.Contracts;
+using AppointmentMaker.Core.Services;
+using AppointmentMaker.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentMaker.Server.Extensions
 {
 	public static class ServiceCollectionExtension
 	{
+		public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+		{
+			services.AddScoped<IAppointmentService, AppointmentService>();
+			return services;
+		}
 		//extension for specifying where to seek the connection string
 		public static IServiceCollection AddApplicationDbContext(this IServiceCollection services, IConfiguration config)
 		{

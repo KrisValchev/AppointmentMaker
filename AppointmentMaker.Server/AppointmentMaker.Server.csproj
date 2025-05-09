@@ -30,7 +30,7 @@
     <ProjectReference Include="..\appointmentmaker.client\appointmentmaker.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\AppointmentMaker.Infrastructure\AppointmentMaker.Infrastructure.csproj" />
+    <ProjectReference Include="..\AppointmentMaker.Core\AppointmentMaker.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

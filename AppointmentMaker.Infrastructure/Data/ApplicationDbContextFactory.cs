@@ -21,7 +21,7 @@ namespace AppointmentMaker.Infrastructure.Data
 				.Build();
 
 			var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			var connectionString = config.GetConnectionString("DefaultConnection");
+			var connectionString = config.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found."); ;
 
 			optionsBuilder.UseSqlServer(connectionString);
 

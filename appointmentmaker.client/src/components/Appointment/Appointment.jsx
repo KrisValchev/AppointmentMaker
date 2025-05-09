@@ -1,7 +1,8 @@
 import styles from './Appointment.module.css'
+import appointmentService from '../../services/appointmentService'
 function Appointment() {
-
-
+        
+    let listOfBusyHours = appointmentService.getBusyHours();
     return (
         <div className="container" >    
             <div className={styles["well-block"]}>
