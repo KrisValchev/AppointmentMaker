@@ -3,7 +3,7 @@ import { getBusyHours } from '../../services/appointmentService.js'
 import { getBarbers } from '../../services/appointmentService.js'
 import React, { useState, useEffect } from 'react';
 function Appointment() {
-    //generating time spans
+    // Generate time slots from 08:00 to 18:00 every 30 minutes
     const generateTimeSlots = (startHour, endHour, intervalMinutes) => {
         const options = [];
         const start = new Date();
@@ -24,7 +24,7 @@ function Appointment() {
     };
     const timeSlots = generateTimeSlots(8, 18, 30);
 
-    // generating barbers
+    // Load barbers on component mount
     const [barbers, setBarbers] = useState([]);
     const [selectedBarber, setSelectedBarber] = useState('');
     useEffect(() => {
@@ -39,6 +39,24 @@ function Appointment() {
     const handleChange = (event) => {
         setSelectedBarber(event.target.value);
     };
+
+    // Load busy hours when barber or date changes
+    const [selectedDate, setSelectedDate] = useState('');
+    const [busyHours, setBusyHours] = useState([]);
+    const [selectedHour, setSelectedHour] = useState('');
+
+    useEffect(() => {
+        if (selectedBarber && selectedDate) {
+            getBusyHours(selectedBarber, selectedDate)
+                .then((res) => {
+                    const times = res.data.map(entry => entry.time);
+                    setBusyHours(times);
+                })
+                .catch((err) => console.error('Error fetching busy hours:', err));
+        }
+    }, [selectedBarber, selectedDate]);
+
+
     return (
         <div className="container" >
             <div className={styles["well-block"]}>
@@ -58,8 +76,9 @@ function Appointment() {
                         {/* Date */}
                         <div className="col-md-6">
                             <div className="form-group">
-                                <label htmlFor="date">Preferred Date</label>
-                                <input id="date" name="date" type="text" placeholder="Preferred Date" className="form-control input-md" />
+                                <label htmlFor="date">Preferred Date </label>
+                                <input id="date" name="date" type="text" placeholder="dd-mm-yyyy" className="form-control input-md" value={selectedDate}
+                                    onChange={(e) => setSelectedDate(e.target.value)} />
                             </div>
                         </div>
 
@@ -67,10 +86,14 @@ function Appointment() {
                         <div className="col-md-6">
                             <div className="form-group">
                                 <label htmlFor="time">Preferred Time</label>
-                                <select id="time" name="time" className="form-control">
+                                <select id="time" name="time" className="form-control" value={selectedHour} onChange={(e) => setSelectedHour(e.target.value)}>
                                     {timeSlots.map((time, index) => (
-                                        <option key={index} value={time}>
-                                            {time}
+                                        <option
+                                            key={time}
+                                            value={time}
+                                            disabled={busyHours.includes(time)}
+                                        >
+                                            {time} {busyHours.includes(time) ? '(Busy)' : ''}
                                         </option>
                                     ))}
                                 </select>
@@ -106,7 +129,7 @@ function Appointment() {
                         {/* Submit */}
                         <div className="col-md-12">
                             <div className="form-group">
-                                <button id="singlebutton" name="singlebutton" className="btn btn-default" >Make An Appointment</button>
+                                <button type="submit"  id="singlebutton" name="singlebutton" className="btn btn-default" >Make An Appointment</button>
                             </div>
                         </div>
                     </div>
