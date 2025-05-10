@@ -1,8 +1,12 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:5194/api/AppointmentController";
+const API_BASE = "https://localhost:7024/api/appointment";
 
-export function getBusyHours(id)
+export function getBusyHours(id,date)
 {
-    return axios.get(`${API_BASE}/get-busy-hours/${id}`);
+    return axios.get(`${API_BASE}/get-busy-hours/${id}/${date}`);
+}
+
+export function getBarbers() {
+    return axios.get(`${API_BASE}/get-barbers`);
 }

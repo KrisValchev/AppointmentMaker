@@ -8,7 +8,16 @@ namespace AppointmentMaker.Server
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+			// Add CORS services
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAll", policy =>
+				{
+					policy.AllowAnyOrigin()    // Allow all origins
+						  .AllowAnyMethod()    // Allow all HTTP methods
+						  .AllowAnyHeader();   // Allow all headers
+				});
+			});
 			// Add services to the container.
 			builder.Services.AddApplicationDbContext(builder.Configuration);
 			builder.Services.AddControllers();
@@ -18,7 +27,7 @@ namespace AppointmentMaker.Server
             builder.Services.AddApplicationServices();
 
 
-			var app = builder.Build();
+			    var app = builder.Build();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -29,17 +38,20 @@ namespace AppointmentMaker.Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+			// Enable CORS before routing
+			app.UseCors("AllowAll");
 
-            app.UseHttpsRedirection();
+			app.UseHttpsRedirection();
+			app.UseRouting();
 
-            app.UseAuthorization();
+			app.UseAuthorization();
 
-
-            app.MapControllers();
+			app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
 
             app.Run();
-        }
+			
+		}
     }
 }
