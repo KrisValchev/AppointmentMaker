@@ -1,8 +1,12 @@
 import styles from './Appointment.module.css'
 import { getBusyHours } from '../../services/appointmentService.js'
 import { getBarbers } from '../../services/appointmentService.js'
+import { postAppointment } from '../../services/appointmentService.js'
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 function Appointment() {
+
     // Generate time slots from 08:00 to 18:00 every 30 minutes
     const generateTimeSlots = (startHour, endHour, intervalMinutes) => {
         const options = [];
@@ -56,6 +60,30 @@ function Appointment() {
         }
     }, [selectedBarber, selectedDate]);
 
+    //Make appointment on submit
+    const [clientNames, setClientNames] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [description, setDescription] = useState('');
+    const navigate = useNavigate();
+    const appointment = {
+        ClientNames: clientNames,
+        Date: selectedDate,
+        Time: selectedHour,
+        BarberId: selectedBarber,
+        Description: description, 
+        PhoneNumber: phoneNumber       
+    };
+    const handleSubmit = async () => {
+
+        postAppointment(appointment).then(response => {
+            console.log('Appointment created:', response.data);
+            navigate('/success'); // redirect to a success page 
+        })
+            .catch(error => {
+                console.error('Error creating appointment:', error);
+            });
+
+    };
 
     return (
         <div className="container" >
@@ -69,7 +97,8 @@ function Appointment() {
                         <div className="col-md-6">
                             <div className="form-group">
                                 <label htmlFor="name">Name</label>
-                                <input id="name" name="name" type="text" placeholder="Name" className="form-control input-md" />
+                                <input id="name" name="name" type="text" placeholder="Name" className="form-control input-md" value={clientNames}
+                                    onChange={(e) => setClientNames(e.target.value)} />
                             </div>
                         </div>
 
@@ -99,7 +128,14 @@ function Appointment() {
                                 </select>
                             </div>
                         </div>
-
+                        {/* Phone number */}
+                        <div className="col-md-6">
+                            <div className="form-group">
+                                <label htmlFor="phoneNumber">Phone Number</label>
+                                <input id="phoneNumber" name="phoneNumber" type="text" placeholder="Phone Number" className="form-control input-md" value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)} />
+                            </div>
+                        </div>
                         {/* Appointment For */}
                         <div className="col-md-12">
                             <div className="form-group">
@@ -122,6 +158,7 @@ function Appointment() {
                                     className="form-control"
                                     placeholder="Write a comment..."
                                     style={{ resize: "none" }}
+                                    value={description} onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -129,7 +166,7 @@ function Appointment() {
                         {/* Submit */}
                         <div className="col-md-12">
                             <div className="form-group">
-                                <button type="submit"  id="singlebutton" name="singlebutton" className="btn btn-default" >Make An Appointment</button>
+                                <button type="submit" id="singlebutton" name="singlebutton" className="btn btn-default" onClick={handleSubmit }>Make An Appointment</button>
                             </div>
                         </div>
                     </div>

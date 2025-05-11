@@ -10,3 +10,7 @@ export function getBusyHours(id,date)
 export function getBarbers() {
     return axios.get(`${API_BASE}/get-barbers`);
 }
+
+export function postAppointment(appointment) {
+    return axios.post(`${API_BASE}/make-appointment`, appointment);
+}
