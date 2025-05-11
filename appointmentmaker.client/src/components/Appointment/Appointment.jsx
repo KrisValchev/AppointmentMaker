@@ -4,6 +4,8 @@ import { getBarbers } from '../../services/appointmentService.js'
 import { postAppointment } from '../../services/appointmentService.js'
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Failure from '../Failure/Failure';
+
 
 function Appointment() {
 
@@ -40,8 +42,11 @@ function Appointment() {
                 console.error('Error fetching barbers:', error);
             });
     }, []);
+    const [selectedBarberText, setSelectedBarberText] = useState("");
     const handleChange = (event) => {
         setSelectedBarber(event.target.value);
+        const selectedText = event.target.options[event.target.selectedIndex].text;     
+        setSelectedBarberText(selectedText);
     };
 
     // Load busy hours when barber or date changes
@@ -56,7 +61,7 @@ function Appointment() {
                     const times = res.data.map(entry => entry.time);
                     setBusyHours(times);
                 })
-                .catch((err) => console.error('Error fetching busy hours:', err));
+                .catch((err) => console.log('Error fetching busy hours:', err));
         }
     }, [selectedBarber, selectedDate]);
 
@@ -70,18 +75,49 @@ function Appointment() {
         Date: selectedDate,
         Time: selectedHour,
         BarberId: selectedBarber,
-        Description: description, 
-        PhoneNumber: phoneNumber       
+        Description: description,
+        PhoneNumber: phoneNumber
     };
-    const handleSubmit = async () => {
 
-        postAppointment(appointment).then(response => {
-            console.log('Appointment created:', response.data);
-            navigate('/success'); // redirect to a success page 
-        })
-            .catch(error => {
-                console.error('Error creating appointment:', error);
-            });
+    const [errorMessages, setErrorMessages] = useState([]);
+    const validateForm = () => {
+        const errors = [];
+        if (clientNames.length < 2 || clientNames.length > 50) {
+            errors.push("Name must be between 2 and 50 characters");
+
+        }
+
+        if (!/^\+?\d{10}$/.test(phoneNumber)) {
+            errors.push("Invalid phone number");
+
+        }
+
+        if (description.length > 1000) {
+            errors.push("Description is over 1000 characters");
+
+        }
+
+        if (!/^\d{2}-\d{2}-\d{4}$/.test(selectedDate)) {
+            errors.push("Date is not in the correct format (dd-mm-yyyy)");
+
+        }
+        setErrorMessages(errors);
+        return errors.length === 0;
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();// prevent default form submit behavior
+        const isValid = validateForm();
+        if (!isValid) return;
+        const response = postAppointment(appointment);
+        navigate('/success', {
+            state: {
+                selectedDate: selectedDate,
+                selectedHour: selectedHour,
+                selectedBarber: selectedBarberText
+            },
+
+        });
+
 
     };
 
@@ -166,9 +202,10 @@ function Appointment() {
                         {/* Submit */}
                         <div className="col-md-12">
                             <div className="form-group">
-                                <button type="submit" id="singlebutton" name="singlebutton" className="btn btn-default" onClick={handleSubmit }>Make An Appointment</button>
+                                <button type="submit" id="singlebutton" name="singlebutton" className="btn btn-default" onClick={handleSubmit}>Make An Appointment</button>
                             </div>
                         </div>
+                        {errorMessages.length > 0 && <Failure errorMessages={errorMessages} />}
                     </div>
                 </form>
             </div>
