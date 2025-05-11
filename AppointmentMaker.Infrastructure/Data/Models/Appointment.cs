@@ -27,7 +27,7 @@ namespace AppointmentMaker.Infrastructure.Data.Models
 		public DateTime Time { get; set; }
 		[Comment("Appointment description")]
 		[MaxLength(DescriptionMaxLength)]
-		public string Description { get; set; } = null!;
+		public string Description { get; set; } 
 		[Required]
 		[Comment("Client's names")]
 		[MaxLength(ClientNameMaxLength)]

@@ -11,5 +11,6 @@ namespace AppointmentMaker.Core.Contracts
 	{
 		 Task<List<BusyHoursModel>> GetBusyHours(int id,string date);		
 		 Task<List<BarbersModel>> GetBarbers();		
+		Task<int> MakeAppointment(AppointmentModel model);
 	}
 }

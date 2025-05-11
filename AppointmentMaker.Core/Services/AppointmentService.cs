@@ -19,12 +19,11 @@ namespace AppointmentMaker.Core.Services
 	{
 		public async Task<List<BarbersModel>> GetBarbers()
 		{
-			var barbers = await repository.AllReadOnly<Barber>().ToListAsync();
-			return await repository.AllReadOnly<Appointment>()
-				.Select(a => new BarbersModel
+			return await repository.AllReadOnly<Barber>()
+				.Select(b => new BarbersModel
 				{
-					Id = a.Id,
-					Name=a.Barber.BarberName
+					Id = b.Id,
+					Name = b.BarberName
 				})
 				.ToListAsync();
 
@@ -38,7 +37,7 @@ namespace AppointmentMaker.Core.Services
 			if (isDate)
 			{
 				busyHours = await repository.AllReadOnly<Appointment>()
-					.Where(a => a.BarberId == id && a.Date==dateTime)	
+					.Where(a => a.BarberId == id && a.Date == dateTime)
 					.Select(a => new BusyHoursModel
 					{
 						BarberId = a.BarberId,
@@ -47,6 +46,30 @@ namespace AppointmentMaker.Core.Services
 					.ToListAsync();
 			}
 			return busyHours;
+		}
+
+		public async Task<int> MakeAppointment(AppointmentModel model)
+		{
+			DateTime date;
+			var isValidDate = DateTime.TryParseExact(model.Date, DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+			DateTime time;
+			var isValidTime = DateTime.TryParseExact(model.Time, TimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out time);
+			Appointment appointment = new Appointment();
+			if (isValidDate && isValidTime)
+			{
+				appointment = new Appointment
+				{
+					BarberId = model.BarberId,
+					ClientNames = model.ClientNames,
+					Date = date,
+					Time = time,
+					PhoneNumber = model.PhoneNumber,
+					Description = model.Description
+				};
+				await repository.AddAsync<Appointment>(appointment);
+				await repository.SaveChangesAsync();
+			}
+			return appointment.Id;
 		}
 	}
 }

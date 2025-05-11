@@ -15,6 +15,7 @@ namespace AppointmentMaker.Infrastructure.Data.Models
 		public int Id { get; set; }
 		[Required]
 		[Comment("Barber's name")]
+		
 		[MaxLength(BarberNameMaxLength)]
 		public string BarberName { get; set; } = null!;
 		

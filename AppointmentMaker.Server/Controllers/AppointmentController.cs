@@ -25,5 +25,12 @@ namespace AppointmentMaker.Server.Controllers
 			return await appointmentService.GetBarbers();
 
 		}
+
+		[HttpPost("make-appointment")]
+		public async Task<IActionResult> MakeAppointment(AppointmentModel model)
+		{
+			var newAppointment=await appointmentService.MakeAppointment(model);
+			return Ok(newAppointment);
+		}
 	}
 }
