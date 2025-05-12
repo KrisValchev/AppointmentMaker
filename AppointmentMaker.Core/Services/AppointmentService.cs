@@ -57,17 +57,21 @@ namespace AppointmentMaker.Core.Services
 			Appointment appointment = new Appointment();
 			if (isValidDate && isValidTime)
 			{
-				appointment = new Appointment
+				var alreadyHasAppointment = repository.AllReadOnly<Appointment>().Any(a => a.Time == time && a.Date == date && a.BarberId == model.BarberId);
+				if (!alreadyHasAppointment)
 				{
-					BarberId = model.BarberId,
-					ClientNames = model.ClientNames,
-					Date = date,
-					Time = time,
-					PhoneNumber = model.PhoneNumber,
-					Description = model.Description
-				};
-				await repository.AddAsync<Appointment>(appointment);
-				await repository.SaveChangesAsync();
+					appointment = new Appointment
+					{
+						BarberId = model.BarberId,
+						ClientNames = model.ClientNames,
+						Date = date,
+						Time = time,
+						PhoneNumber = model.PhoneNumber,
+						Description = model.Description
+					};
+					await repository.AddAsync<Appointment>(appointment);
+					await repository.SaveChangesAsync();
+				}
 			}
 			return appointment.Id;
 		}
