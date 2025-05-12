@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Failure from '../Failure/Failure';
 
 
-function Appointment() {
+function Appointment({setHasAccess}) {
 
     // Generate time slots from 08:00 to 18:00 every 30 minutes
     const generateTimeSlots = (startHour, endHour, intervalMinutes) => {
@@ -79,6 +79,7 @@ function Appointment() {
         PhoneNumber: phoneNumber
     };
 
+    //Validate form and show errors if needed
     const [errorMessages, setErrorMessages] = useState([]);
     const validateForm = () => {
         const errors = [];
@@ -101,14 +102,26 @@ function Appointment() {
             errors.push("Date is not in the correct format (dd-mm-yyyy)");
 
         }
+        if (selectedBarber == 0) {
+            errors.push("Choose a barber!");
+        }
+        if (selectedHour.length === 0) {
+            errors.push("Choose a time!");
+        }
+        if (busyHours.includes(selectedHour)) {
+            errors.push("There is already an appointment at this time. Choose different time!");
+        }
+        
         setErrorMessages(errors);
         return errors.length === 0;
     };
+    //Show success page after valid form 
     const handleSubmit = async (e) => {
         e.preventDefault();// prevent default form submit behavior
         const isValid = validateForm();
         if (!isValid) return;
         const response = postAppointment(appointment);
+        setHasAccess(true); 
         navigate('/success', {
             state: {
                 selectedDate: selectedDate,
@@ -141,7 +154,7 @@ function Appointment() {
                         {/* Date */}
                         <div className="col-md-6">
                             <div className="form-group">
-                                <label htmlFor="date">Preferred Date </label>
+                                <label htmlFor="date">Preferred date </label>
                                 <input id="date" name="date" type="text" placeholder="dd-mm-yyyy" className="form-control input-md" value={selectedDate}
                                     onChange={(e) => setSelectedDate(e.target.value)} />
                             </div>
@@ -152,6 +165,7 @@ function Appointment() {
                             <div className="form-group">
                                 <label htmlFor="time">Preferred Time</label>
                                 <select id="time" name="time" className="form-control" value={selectedHour} onChange={(e) => setSelectedHour(e.target.value)}>
+                                    <option value="">Select a time</option>
                                     {timeSlots.map((time, index) => (
                                         <option
                                             key={time}
