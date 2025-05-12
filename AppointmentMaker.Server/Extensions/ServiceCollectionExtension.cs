@@ -12,6 +12,7 @@ namespace AppointmentMaker.Server.Extensions
 		{
 
 			services.AddScoped<IAppointmentService, AppointmentService>();
+			services.AddScoped< GoogleCalendarService>();
 			return services;
 		}
 

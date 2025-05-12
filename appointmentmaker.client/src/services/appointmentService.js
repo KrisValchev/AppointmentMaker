@@ -14,3 +14,7 @@ export function getBarbers() {
 export function postAppointment(appointment) {
     return  axios.post(`${API_BASE}/make-appointment`, appointment);
 }
+
+export function postAppointmentInCalendar(appointment) {
+    return axios.post(`${API_BASE}/create`, appointment);
+}

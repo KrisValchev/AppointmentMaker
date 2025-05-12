@@ -1,13 +1,16 @@
 import styles from './Appointment.module.css'
-import { getBusyHours } from '../../services/appointmentService.js'
-import { getBarbers } from '../../services/appointmentService.js'
-import { postAppointment } from '../../services/appointmentService.js'
+import { getBusyHours, getBarbers, postAppointment, postAppointmentInCalendar } from '../../services/appointmentService.js'
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Failure from '../Failure/Failure';
+function Appointment({ setHasAccess }) {
 
+    //date convertor
+    function convertToISODate(ddmmyyyy) {
+        const [day, month, year] = ddmmyyyy.split("-");
+        return `${year}-${month}-${day}`;
+    }
 
-function Appointment({setHasAccess}) {
 
     // Generate time slots from 08:00 to 18:00 every 30 minutes
     const generateTimeSlots = (startHour, endHour, intervalMinutes) => {
@@ -121,6 +124,14 @@ function Appointment({setHasAccess}) {
         const isValid = validateForm();
         if (!isValid) return;
         const response = postAppointment(appointment);
+        postAppointmentInCalendar({
+            clientName: clientNames,
+            phone: phoneNumber,
+            barberName: selectedBarberText,
+            description: description,
+            time:selectedHour,
+            startTime: convertToISODate(selectedDate),
+        });
         setHasAccess(true); 
         navigate('/success', {
             state: {

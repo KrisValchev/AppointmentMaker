@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.69.0.3746" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AppointmentMaker.Infrastructure\AppointmentMaker.Infrastructure.csproj" />
   </ItemGroup>
 
